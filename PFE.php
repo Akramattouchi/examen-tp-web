@@ -1,27 +1,65 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\Entity;
 
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
+use App\Repository\PFERepository;
+use Doctrine\ORM\Mapping as ORM;
 
-class PFE extends Fixture
+#[ORM\Entity(repositoryClass: PFERepository::class)]
+class PFE
 {
-    public function load(ObjectManager $manager): void
-    {
-        $faker = Factory::create();
-        for($i = 0 ; $i< 100 ; $i++) {
-            $repo = $manager->getRepository(\App\Entity\Entreprise::class);
-            $random = rand(201,249);
-            $entreprise =$repo->findOneBy(['id'=>"$random"], []);
-            $pfe = new \App\Entity\PFE();
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private $id;
 
-            $pfe->setNomStudent($faker->name);
-            $pfe->setTitle("PFE" . $i);
-            $pfe->setEntreprise($entreprise);
-            $manager->persist($pfe);
-        }
-        $manager->flush();
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $title;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $NomStudent;
+
+    #[ORM\ManyToOne(targetEntity: Entreprise::class, inversedBy: 'ListePFE')]
+    private $entreprise;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getNomStudent(): ?string
+    {
+        return $this->NomStudent;
+    }
+
+    public function setNomStudent(?string $NomStudent): self
+    {
+        $this->NomStudent = $NomStudent;
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): self
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
     }
 }
